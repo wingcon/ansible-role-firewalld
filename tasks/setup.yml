@@ -1,19 +1,41 @@
 ---
 - name: Get current zones
   shell: firewall-cmd --get-zones --permanent
+  when: ansible_facts.services.firewalld.state == "started"
+  register: zone_list
+  changed_when: False
+
+- name: Get current zones
+  shell: firewall-offline-cmd --get-zones
+  when: ansible_facts.services.firewalld.state != "started"
   register: zone_list
   changed_when: False
 
 - name: Create zone
   shell: firewall-cmd --new-zone={{ item.zone }} --permanent
   register: required_force_restart
-  when: item.zone not in zone_list.stdout and item.state == 'enabled'
+  when:
+   - item.zone not in zone_list.stdout
+   - item.state == 'enabled'
+   - ansible_facts.services.firewalld.state == "started"
+  with_items: "{{ shhirose_firewalld.zones | default([]) }}"
+  notify: Reload firewalld
+
+- name: Create zone
+  shell: firewall-offline-cmd --new-zone={{ item.zone }}
+  register: required_force_restart
+  when:
+   - item.zone not in zone_list.stdout
+   - item.state == 'enabled'
+   - ansible_facts.services.firewalld.state != "started"
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
   notify: Reload firewalld
  
 - name: Force restart firewalld
   shell: firewall-cmd --reload
-  when: required_force_restart.changed
+  when:
+   - required_force_restart.changed
+   - ansible_facts.services.firewalld.state == "started"
 
 - include: "default-zone.yml"
 
@@ -37,6 +59,18 @@
 
 - name: Delete zone
   shell: firewall-cmd --delete-zone={{ item.zone }} --permanent
-  when: item.zone in zone_list.stdout and item.state == 'disabled'
+  when:
+   - item.zone in zone_list.stdout
+   - item.state == 'disabled'
+   - ansible_facts.services.firewalld.state == "started"
+  with_items: "{{ shhirose_firewalld.zones | default([]) }}"
+  notify: Reload firewalld
+
+- name: Delete zone
+  shell: firewall-offline-cmd --delete-zone={{ item.zone }}
+  when:
+   - item.zone in zone_list.stdout
+   - item.state == 'disabled'
+   - ansible_facts.services.firewalld.state != "started"
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
   notify: Reload firewalld

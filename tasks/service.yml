@@ -3,7 +3,7 @@
   firewalld:
     service: "{{ item.service }}"
     zone: "{{ item.zone | default(omit) }}"
-    immediate: "{{ item.immediate | default(True) }}"
+    immediate: "{{ item.immediate | default(ansible_facts.services.firewalld.state == 'started') }}"
     permanent: "{{ item.permanent | default(False) }}"
     state: "{{ item.state }}"
   with_items: "{{ shhirose_firewalld.services | default([]) }}"
