@@ -71,7 +71,6 @@
    - item.item.type not in item.stdout
    - ansible_facts.services.firewalld.state != 'started'
   with_items: "{{ icmp_block_list.results | default([]) }}"
-  notify: Reload firewalld
 
 - name: Remove icmp-block permanent
   shell: firewall-cmd --remove-icmp-block={{ item.item.type }}{% if item.item.zone is defined %} --zone={{ item.item.zone }}{% endif %} --permanent
@@ -91,4 +90,3 @@
    - item.item.type in item.stdout
    - ansible_facts.services.firewalld.state != 'started'
   with_items: "{{ icmp_block_list.results | default([]) }}"
-  notify: Reload firewalld
