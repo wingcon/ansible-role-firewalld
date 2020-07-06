@@ -4,6 +4,7 @@
     port: "{{ item.port }}"
     zone: "{{ item.zone | default(omit) }}"
     immediate: "{{ item.immediate | default(ansible_facts.services.firewalld.state == 'started') }}"
+    offline: "{{ item.offline | default(ansible_facts.services.firewalld.state != 'started') }}"
     permanent: "{{ item.permanent | default(False) }}"
     state: "{{ item.state }}"
   with_items: "{{ shhirose_firewalld.ports | default([]) }}"

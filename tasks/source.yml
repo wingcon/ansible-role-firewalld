@@ -36,6 +36,7 @@
     source: "{{ item.source }}"
     zone: "{{ item.zone | default(public) }}"
     immediate: "{{ item.immediate | default(ansible_facts.services.firewalld.state == 'started') }}"
+    offline: "{{ item.offline | default(ansible_facts.services.firewalld.state != 'started') }}"
     permanent: "{{ item.permanent | default(False) }}"
     state: "{{ item.state }}"
   when: item.permanent | default(False)
