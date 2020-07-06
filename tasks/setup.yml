@@ -37,6 +37,10 @@
    - required_force_restart.changed
    - ansible_facts.services.firewalld.state == "started"
 
+- name: Wait a moment for the new zones to get noticed
+  pause:
+    seconds: 5
+
 - include: "default-zone.yml"
 
 - include: "target.yml"
