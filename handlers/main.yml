@@ -3,3 +3,4 @@
   shell: firewall-cmd --reload
   register: ret
   failed_when: ret.rc != 0 and ret.rc != 252
+  when: firewalld_running
