@@ -1,4 +1,5 @@
 ---
+shhirose_firewalld_config_path: "/etc/firewalld"
 shhirose_firewalld:
   default_zone: public
 

@@ -47,6 +47,8 @@
 
 - include: "interface.yml"
 
+- include: "service_config.yml"
+
 - include: "service.yml"
 
 - include: "port.yml"

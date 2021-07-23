@@ -1,0 +1,7 @@
+---
+- name: Write service config file
+  template:
+    src: service.xml.j2
+    dest: "{{ shhirose_firewalld_config_path }}/services/{{ item.name }}.xml"
+  with_items: "{{ shhirose_firewalld.service_config | default([]) }}"
+  notify: Reload firewalld
