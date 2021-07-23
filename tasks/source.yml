@@ -13,7 +13,8 @@
    - item.item.immediate | default(True)
    - item.item.state == "enabled"
    - item.item.source not in item.stdout
-   - ansible_facts.services.firewalld.state == 'started'
+   - firewalld_running
+  notify: Reload firewalld
   with_items: "{{ sources_list.results | default([]) }}"
 
 - name: Add source
@@ -22,7 +23,7 @@
    - item.item.immediate | default(True)
    - item.item.state == "enabled"
    - item.item.source not in item.stdout
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ sources_list.results | default([]) }}"
 
 # firwalld module is not supported non-permanent of source
@@ -32,7 +33,8 @@
    - item.item.immediate | default(True)
    - item.item.state == "disabled"
    - item.item.source in item.stdout
-   - ansible_facts.services.firewalld.state == 'started'
+   - firewalld_running
+  notify: Reload firewalld
   with_items: "{{ sources_list.results | default([]) }}"
 
 - name: Remove source
@@ -41,15 +43,15 @@
    - item.item.immediate | default(True)
    - item.item.state == "disabled"
    - item.item.source in item.stdout
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ sources_list.results | default([]) }}"
 
 - name: Set source permanent
   firewalld:
     source: "{{ item.source }}"
     zone: "{{ item.zone | default(public) }}"
-    immediate: "{{ item.immediate | default(ansible_facts.services.firewalld.state == 'started') }}"
-    offline: "{{ item.offline | default(ansible_facts.services.firewalld.state != 'started') }}"
+    immediate: "{{ item.immediate | default(firewalld_running) }}"
+    offline: "{{ item.offline | default(not firewalld_running) }}"
     permanent: "{{ item.permanent | default(False) }}"
     state: "{{ item.state }}"
   when: item.permanent | default(False)

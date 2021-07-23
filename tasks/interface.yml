@@ -3,8 +3,8 @@
   firewalld:
     interface: "{{ item.interface }}"
     zone: "{{ item.zone | default(omit) }}"
-    immediate: "{{ item.immediate | default(ansible_facts.services.firewalld.state == 'started') }}"
-    offline: "{{ item.offline | default(ansible_facts.services.firewalld.state != 'started') }}"
+    immediate: "{{ item.immediate | default(firewalld_running) }}"
+    offline: "{{ item.offline | default(not firewalld_running) }}"
     permanent: "{{ item.permanent | default(False) }}"
     state: "{{ item.state }}"
   with_items: "{{ shhirose_firewalld.interfaces | default([]) }}"

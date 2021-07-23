@@ -4,7 +4,7 @@
   register: icmp_block_list
   when:
    - item.immediate | default(True) or item.permanent | default(False)
-   - ansible_facts.services.firewalld.state == 'started'
+   - firewalld_running
   with_items: "{{ shhirose_firewalld.icmp_blocks | default([]) }}"
   changed_when: False
 
@@ -13,7 +13,7 @@
   register: icmp_block_list
   when:
    - item.immediate | default(True) or item.permanent | default(False)
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ shhirose_firewalld.icmp_blocks | default([]) }}"
   changed_when: False
 
@@ -23,7 +23,8 @@
    - item.item.immediate | default(True)
    - item.item.state == "enabled"
    - item.item.type not in item.stdout
-   - ansible_facts.services.firewalld.state == 'started'
+   - firewalld_running
+  notify: Reload firewalld
   with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Add icmp-block
@@ -32,7 +33,7 @@
    - item.item.immediate | default(True)
    - item.item.state == "enabled"
    - item.item.type not in item.stdout
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Remove icmp-block
@@ -41,7 +42,8 @@
    - item.item.immediate | default(True)
    - item.item.state == "disabled"
    - item.item.type in item.stdout
-   - ansible_facts.services.firewalld.state == 'started'
+   - firewalld_running
+  notify: Reload firewalld
   with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Remove icmp-block
@@ -50,7 +52,7 @@
    - item.item.immediate | default(True)
    - item.item.state == "disabled"
    - item.item.type in item.stdout
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Add icmp-block permanent
@@ -59,9 +61,9 @@
    - item.item.permanent | default(False)
    - item.item.state == "enabled"
    - item.item.type not in item.stdout
-   - ansible_facts.services.firewalld.state == 'started'
-  with_items: "{{ icmp_block_list.results | default([]) }}"
+   - firewalld_running
   notify: Reload firewalld
+  with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Add icmp-block permanent
   shell: firewall-offline-cmd --add-icmp-block={{ item.item.type }}{% if item.item.zone is defined %} --zone={{ item.item.zone }}{% endif %}
@@ -69,7 +71,7 @@
    - item.item.permanent | default(False)
    - item.item.state == "enabled"
    - item.item.type not in item.stdout
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Remove icmp-block permanent
@@ -78,9 +80,9 @@
    - item.item.permanent | default(False)
    - item.item.state == "disabled"
    - item.item.type in item.stdout
-   - ansible_facts.services.firewalld.state == 'started'
-  with_items: "{{ icmp_block_list.results | default([]) }}"
+   - firewalld_running
   notify: Reload firewalld
+  with_items: "{{ icmp_block_list.results | default([]) }}"
 
 - name: Remove icmp-block permanent
   shell: firewall-offline-cmd --remove-icmp-block={{ item.item.type }}{% if item.item.zone is defined %} --zone={{ item.item.zone }}{% endif %}
@@ -88,5 +90,5 @@
    - item.item.permanent | default(False)
    - item.item.state == "disabled"
    - item.item.type in item.stdout
-   - ansible_facts.services.firewalld.state != 'started'
+   - not firewalld_running
   with_items: "{{ icmp_block_list.results | default([]) }}"

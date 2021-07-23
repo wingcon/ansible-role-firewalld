@@ -1,13 +1,13 @@
 ---
 - name: Get current zones
   shell: firewall-cmd --get-zones --permanent
-  when: ansible_facts.services.firewalld.state == "started"
+  when: firewalld_running
   register: zone_list
   changed_when: False
 
 - name: Get current zones
   shell: firewall-offline-cmd --get-zones
-  when: ansible_facts.services.firewalld.state != "started"
+  when: not firewalld_running
   register: zone_list
   changed_when: False
 
@@ -17,7 +17,7 @@
   when:
    - item.zone not in zone_list.stdout
    - item.state == 'enabled'
-   - ansible_facts.services.firewalld.state == "started"
+   - firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
   notify: Reload firewalld
 
@@ -27,15 +27,14 @@
   when:
    - item.zone not in zone_list.stdout
    - item.state == 'enabled'
-   - ansible_facts.services.firewalld.state != "started"
+   - not firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
-  notify: Reload firewalld
  
 - name: Force restart firewalld
   shell: firewall-cmd --reload
   when:
    - required_force_restart.changed
-   - ansible_facts.services.firewalld.state == "started"
+   - firewalld_running
 
 - name: Wait a moment for the new zones to get noticed
   pause:
@@ -68,7 +67,7 @@
   when:
    - item.zone in zone_list.stdout
    - item.state == 'disabled'
-   - ansible_facts.services.firewalld.state == "started"
+   - firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
   notify: Reload firewalld
 
@@ -77,6 +76,5 @@
   when:
    - item.zone in zone_list.stdout
    - item.state == 'disabled'
-   - ansible_facts.services.firewalld.state != "started"
+   - not firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
-  notify: Reload firewalld
