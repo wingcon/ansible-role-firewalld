@@ -4,7 +4,7 @@
 
 - name: register firewalld service state fact
   set_fact:
-    firewalld_running: ansible_facts.services.firewalld.state == "started"
+    firewalld_running: "{{ ansible_facts.services.firewalld.state == 'started' }}"
 
 - include: "{{ ansible_os_family }}.yml"
   when: ansible_os_family == "RedHat"
