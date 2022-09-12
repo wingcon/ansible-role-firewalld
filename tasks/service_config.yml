@@ -7,7 +7,7 @@
   notify: Reload firewalld
 
 - name: Register service with offline firewalld
-  shell: firewall-offline-cmd --new-service-from-file={{ item.name }}.xml --name={{ item.name }}
+  shell: firewall-offline-cmd --new-service-from-file={{ shhirose_firewalld_config_path }}/services/{{ item.name }}.xml --name={{ item.name }}
   register: ret
   failed_when: ret.rc != 0 and ret.rc != 252
   with_items: "{{ shhirose_firewalld.service_config | default([]) }}"
