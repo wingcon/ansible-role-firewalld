@@ -5,6 +5,22 @@
   register: zone_list
   changed_when: False
 
+- name: Create zone
+  shell: firewall-cmd --new-zone={{ item.zone }} --permanent
+  register: required_force_restart
+  when:
+   - firewalld_running
+   - item.zone not in zone_list.stdout
+   - item.state == 'enabled'
+  with_items: "{{ shhirose_firewalld.zones | default([]) }}"
+  notify: Reload firewalld
+
+- name: Force restart firewalld
+  shell: firewall-cmd --reload
+  when:
+   - required_force_restart.changed
+   - firewalld_running
+
 - name: Get current zones
   shell: firewall-offline-cmd --get-zones
   when: not firewalld_running
@@ -12,24 +28,14 @@
   changed_when: False
 
 - name: Create zone
-  shell: firewall-cmd --new-zone={{ item.zone }} --permanent
-  register: required_force_restart
-  when:
-   - item.zone not in zone_list.stdout
-   - item.state == 'enabled'
-   - firewalld_running
-  with_items: "{{ shhirose_firewalld.zones | default([]) }}"
-  notify: Reload firewalld
-
-- name: Create zone
   shell: firewall-offline-cmd --new-zone={{ item.zone }}
   register: required_force_restart
   when:
+   - not firewalld_running
    - item.zone not in zone_list.stdout
    - item.state == 'enabled'
-   - not firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
- 
+
 - name: Force restart firewalld
   shell: firewall-cmd --reload
   when:
@@ -40,7 +46,11 @@
   pause:
     seconds: 5
 
-- include: "default-zone.yml"
+- include: "default-zone-offline.yml"
+  when: not firewalld_running
+
+- include: "default-zone-online.yml"
+  when: firewalld_running
 
 - include: "target.yml"
 
@@ -54,27 +64,51 @@
 
 - include: "rich-rule.yml"
 
+- include: "source-pre.yml"
+
+- include: "source-offline.yml"
+  when: not firewalld_running
+
+- include: "source-online.yml"
+  when: firewalld_running
+
 - include: "source.yml"
 
 - include: "masquerade.yml"
 
 - include: "forward-port.yml"
 
-- include: "icmp-block.yml"
+- include: "icmp-block-offline.yml"
+  when: not firewalld_running
+
+- include: "icmp-block-online.yml"
+  when: firewalld_running
+
+- name: Get current zones
+  shell: firewall-cmd --get-zones --permanent
+  when: firewalld_running
+  register: zone_list
+  changed_when: False
 
 - name: Delete zone
   shell: firewall-cmd --delete-zone={{ item.zone }} --permanent
   when:
+   - firewalld_running
    - item.zone in zone_list.stdout
    - item.state == 'disabled'
-   - firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"
   notify: Reload firewalld
+
+- name: Get current zones
+  shell: firewall-offline-cmd --get-zones
+  when: not firewalld_running
+  register: zone_list
+  changed_when: False
 
 - name: Delete zone
   shell: firewall-offline-cmd --delete-zone={{ item.zone }}
   when:
+   - not firewalld_running
    - item.zone in zone_list.stdout
    - item.state == 'disabled'
-   - not firewalld_running
   with_items: "{{ shhirose_firewalld.zones | default([]) }}"

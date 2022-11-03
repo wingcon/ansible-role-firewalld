@@ -1,0 +1,7 @@
+---
+- name: Get current source
+  shell: firewall-offline-cmd --list-sources{% if item.zone is defined %} --zone={{ item.zone }}{% endif %}{% if item.permanent | default(False) %}{% endif %}
+  register: sources_list
+  when: item.immediate | default(True) or item.permanent | default(False)
+  with_items: "{{ shhirose_firewalld.sources | default([]) }}"
+  changed_when: False

@@ -1,0 +1,22 @@
+---
+# firwalld module is not supported non-permanent of source
+- name: Add source
+  shell: firewall-cmd --add-source={{ item.item.source }}{% if item.item.zone is defined %} --zone={{ item.item.zone }}{% endif %}
+  when:
+   - item.item.immediate | default(True)
+   - item.item.state == "enabled"
+   - item.item.source not in item.stdout
+   - firewalld_running
+  notify: Reload firewalld
+  with_items: "{{ sources_list.results | default([]) }}"
+
+# firwalld module is not supported non-permanent of source
+- name: Remove source
+  shell: firewall-cmd --remove-source={{ item.item.source }}{% if item.item.zone is defined %} --zone={{ item.item.zone }}{% endif %}
+  when:
+   - item.item.immediate | default(True)
+   - item.item.state == "disabled"
+   - item.item.source in item.stdout
+   - firewalld_running
+  notify: Reload firewalld
+  with_items: "{{ sources_list.results | default([]) }}"
