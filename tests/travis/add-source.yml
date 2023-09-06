@@ -8,6 +8,6 @@
         sources:
             - source: 172.16.0.0/16
               zone: test01
-              immediate: yes
+              immediate: true
               permanent: False
               state: enabled

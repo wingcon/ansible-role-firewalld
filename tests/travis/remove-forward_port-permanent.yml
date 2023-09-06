@@ -11,6 +11,6 @@
               toport: "14002"
               toaddr: 10.255.255.254
               zone: test02
-              immediate: no
+              immediate: false
               permanent: True
               state: disabled

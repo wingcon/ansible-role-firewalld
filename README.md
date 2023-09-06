@@ -22,7 +22,7 @@ shhirose_firewalld:
   interfaces:
     - interface: eth901
       zone: public
-      immediate: yes
+      immediate: true
       permanent: True
       state: enabled
 
@@ -31,43 +31,43 @@ shhirose_firewalld:
       zone: home
 
   masquerades:
-    - masquerade: yes
+    - masquerade: true
       zone: public
-      immediate: yes
+      immediate: true
       permanent: True
 
   services:
     - service: http
       zone: public
-      immediate: yes
+      immediate: true
       permanent: True
       state: enabled
 
   ports:
     - port: "8080/tcp"
       zone: public
-      immediate: yes
+      immediate: true
       permanent: True
       state: enabled
 
   rich_rules:
     - rule: "rule family="ipv4" source address="192.168.0.0/16" port protocol="tcp" port="22" accept"
       zone: public
-      immediate: yes
+      immediate: true
       permanent: False
       state: enabled
 
   icmp_blocks:
     - type: echo-request
       zone: public
-      immediate: yes
+      immediate: true
       permanent: False
       state: enabled
 
   sources:
     - source: "172.10.0.0/16"
       zone: public
-      immediate: yes
+      immediate: true
       permanent: False
       state: enabled
 
@@ -77,7 +77,7 @@ shhirose_firewalld:
       toaddr: "192.168.10.10"
       toport: "22"
       zone: public
-      immediate: yes
+      immediate: true
       permanent: False
       state: enabled
 ```
@@ -185,18 +185,18 @@ None
       services:
         - service: http
           zone: public
-          immediate: yes
+          immediate: true
           permanent: True
           state: enabled
         - service: https
           zone: public
-          immediate: yes
+          immediate: true
           permanent: True
           state: enabled
       ports:
         - port: 8080/tcp
           zone: public
-          immediate: yes
+          immediate: true
           permanent: True
           state: enabled
 ```

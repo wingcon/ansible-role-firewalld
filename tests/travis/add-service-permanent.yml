@@ -8,6 +8,6 @@
         services:
             - service: http
               zone: test02
-              immediate: no
+              immediate: false
               permanent: True
               state: enabled

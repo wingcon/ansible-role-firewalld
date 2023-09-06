@@ -10,52 +10,52 @@ shhirose_firewalld:
   interfaces: []
     #  - interface: eth3
     #    zone: xxx1
-    #    immediate: yes
+    #    immediate: true
     #    permanent: True
     #    state: enabled
 
   tergets: []
-    #  - target: no
+    #  - target: false
     #    zone: public
 
   masquerades: []
-    #  - masquerade: no
+    #  - masquerade: false
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
 
   services: []
     #  - service: http
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
     #    state: enabled
 
   ports: []
     #  - port: ""
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
     #    state: enabled
 
   rich_rules: []
     #  - rule: ""
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
     #    state: enabled
 
   icmp_blocks: []
     #  - type: ""
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
     #    state: enabled
 
   sources: []
     #  - source: ""
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
     #    state: enabled
 
@@ -65,6 +65,6 @@ shhirose_firewalld:
     #    toaddr: ""
     #    toport: 80
     #    zone: public
-    #    immediate: yes
+    #    immediate: true
     #    permanent: False
     #    state: enabled

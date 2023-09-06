@@ -8,6 +8,6 @@
         icmp_blocks:
             - type: echo-request
               zone: test01
-              immediate: yes
+              immediate: true
               permanent: False
               state: disabled

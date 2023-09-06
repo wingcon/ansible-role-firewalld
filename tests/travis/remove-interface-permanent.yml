@@ -8,6 +8,6 @@
         interfaces:
             - interface: eth902
               zone: test02
-              immediate: no
+              immediate: false
               permanent: True
               state: disabled

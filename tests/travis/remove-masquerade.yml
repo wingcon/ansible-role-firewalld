@@ -6,7 +6,7 @@
   vars:
     - shhirose_firewalld:
         masquerades:
-            - masquerade: no
+            - masquerade: false
               zone: test01
-              immediate: yes
+              immediate: true
               permanent: False
