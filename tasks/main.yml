@@ -6,7 +6,7 @@
   set_fact:
     firewalld_running: "{{ ansible_facts.services.firewalld.state in ('started', 'running') }}"
 
-- include: "{{ ansible_os_family }}.yml"
+- include_tasks: "{{ ansible_os_family }}.yml"
   when: ansible_os_family == "RedHat"
   tags:
     - firewalld
@@ -14,7 +14,7 @@
     - security
     - install
 
-- include: "setup.yml"
+- include_tasks: "setup.yml"
   tags:
     - firewalld
     - security
